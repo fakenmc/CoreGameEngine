@@ -17,7 +17,8 @@ namespace CoreGameEngine
         private static readonly Type[] oneOfAKind = new Type[]
         {
             typeof(Position),
-            typeof(KeyObserver)
+            typeof(KeyObserver),
+            typeof(ConsoleSprite)
         };
 
         public Scene ParentScene { get; internal set; }

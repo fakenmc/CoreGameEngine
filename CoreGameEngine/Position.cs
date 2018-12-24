@@ -2,16 +2,16 @@ namespace CoreGameEngine
 {
     public class Position : Component
     {
-        public Vector2 Pos { get; set; }
+        public Vector3 Pos { get; set; }
 
         public Position()
         {
-            Pos = new Vector2(0f, 0f);
+            Pos = new Vector3(0f, 0f, 0f);
         }
 
-        public Position(float x, float y)
+        public Position(float x, float y, float z)
         {
-            Pos = new Vector2(x, y);
+            Pos = new Vector3(x, y, z);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Basic
             KeyObserver playerKeyListener = new KeyObserver(new ConsoleKey[]
                 { ConsoleKey.DownArrow, ConsoleKey.UpArrow, ConsoleKey.RightArrow, ConsoleKey.LeftArrow });
             player.AddComponent(playerKeyListener);
-            player.AddComponent(new Position(10f, 10f));
+            player.AddComponent(new Position(10f, 10f, 0f));
             player.AddComponent(new Player());
             player.AddComponent(new ConsoleSprite(playerSprite));
             scene.AddGameObject("player", player);

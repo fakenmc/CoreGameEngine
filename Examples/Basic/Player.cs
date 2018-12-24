@@ -19,16 +19,16 @@ namespace Basic
             {
                 switch (key) {
                     case ConsoleKey.UpArrow:
-                        position.Pos = new Vector2(position.Pos.X, position.Pos.Y - 1);
+                        position.Pos = new Vector3(position.Pos.X, position.Pos.Y - 1, position.Pos.Z);
                         break;
                     case ConsoleKey.DownArrow:
-                        position.Pos = new Vector2(position.Pos.X, position.Pos.Y + 1);
+                        position.Pos = new Vector3(position.Pos.X, position.Pos.Y + 1, position.Pos.Z);
                         break;
                     case ConsoleKey.RightArrow:
-                        position.Pos = new Vector2(position.Pos.X + 1, position.Pos.Y);
+                        position.Pos = new Vector3(position.Pos.X + 1, position.Pos.Y, position.Pos.Z);
                         break;
                     case ConsoleKey.LeftArrow:
-                        position.Pos = new Vector2(position.Pos.X - 1, position.Pos.Y);
+                        position.Pos = new Vector3(position.Pos.X - 1, position.Pos.Y, position.Pos.Z);
                         break;
                 }
                 Console.WriteLine($"Player position is ({position.Pos.X:f2}, {position.Pos.Y:f2})");

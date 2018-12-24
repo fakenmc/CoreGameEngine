@@ -9,17 +9,17 @@ using System.Collections.Generic;
 
 namespace CoreGameEngine
 {
-    public class BWConsoleRenderer<T>
+    public class ConsoleRenderer<T>
     {
         private struct Renderable
         {
             public Vector3 Pos { get; }
-            public T ToRender { get; }
+            public ConsoleSprite Sprite { get; }
 
-            public Renderable(Vector3 pos, T toRender)
+            public Renderable(Vector3 pos, ConsoleSprite sprite)
             {
                 Pos = pos;
-                ToRender = toRender;
+                Sprite = sprite;
             }
         }
 
@@ -28,22 +28,20 @@ namespace CoreGameEngine
 
         private char[,] frame;
 
-        private List<Renderable> stuffToRender;
-        public BWConsoleRenderer(int xdim, int ydim)
+        public ConsoleRenderer(int xdim, int ydim)
         {
             this.xdim = xdim;
             this.ydim = ydim;
             frame = new char[xdim, ydim];
-            stuffToRender = new List<Renderable>();
         }
 
-        public void AddToRender(Vector3 pos, T thingToRender)
+        public void Render(IEnumerable<GameObject> gameObjects)
         {
-            stuffToRender.Add(new Renderable(pos, thingToRender));
-        }
+            List<Renderable> stuffToRender = new List<Renderable>();
 
-        public void Render()
-        {
+            // Filter game objects with sprite and position
+            // Turn sprite and position into renderable, add to list
+
             // Clear frame
             for (int x = 0; x < xdim; x++)
             {
