@@ -6,7 +6,7 @@
  * */
 using System;
 
-namespace ConsoleGameEngine
+namespace CoreGameEngine
 {
     class Program
     {

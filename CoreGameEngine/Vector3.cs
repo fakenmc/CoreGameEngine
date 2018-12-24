@@ -4,7 +4,7 @@
  *
  * Author: Nuno Fachada
  * */
-namespace ConsoleGameEngine
+namespace CoreGameEngine
 {
     public struct Vector3
     {

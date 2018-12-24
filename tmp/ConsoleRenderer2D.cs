@@ -8,7 +8,7 @@ using System;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace ConsoleGameEngine
+namespace CoreGameEngine
 {
     // Console renderer
     public class ConsoleRenderer2D : GameObject

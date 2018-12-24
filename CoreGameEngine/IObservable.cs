@@ -4,12 +4,14 @@
  *
  * Author: Nuno Fachada
  * */
-namespace ConsoleGameEngine
+
+using System.Collections.Generic;
+namespace CoreGameEngine
 {
     public interface IObservable<T>
     {
-         void AddObserver(T whatToObserve, IObserver<T> observer);
-         void RemoveObserver(T whatToObserve, IObserver<T> observer);
-         void RemoveObserver(IObserver<T> observer);
+        void RegisterObserver(IEnumerable<T> whatToObserve, IObserver<T> observer);
+        void RemoveObserver(T whatToObserve, IObserver<T> observer);
+        void RemoveObserver(IObserver<T> observer);
     }
 }

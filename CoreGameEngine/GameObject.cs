@@ -6,22 +6,41 @@
  * */
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using CoreGameEngine.Components;
 
-namespace ConsoleGameEngine
+namespace CoreGameEngine
 {
-    public class GameObject : Component, IEnumerable<Component>
+    public class GameObject : IGameObject, IEnumerable<Component>
     {
 
-        protected Scene CurrentScene { get; }
+        public Scene ParentScene { get; internal set; }
 
-        private readonly IEnumerable<Component> components;
+        private readonly ICollection<Component> components;
 
-        public GameObject(Scene scene)
+        public GameObject()
         {
-            CurrentScene = scene;
             components = new List<Component>();
         }
-        public override void Start()
+
+        public void AddComponent(Component component) {
+            component.ParentGameObject = this;
+            components.Add(component);
+        }
+
+        public T GetComponent<T>() where T : Component
+        {
+            return components.First(component => component is T) as T;
+        }
+
+        public IEnumerable<T> GetComponents<T>() where T : Component
+        {
+            return components
+                .Where(component => component is T)
+                .Select((component => component as T));
+        }
+
+        public void Start()
         {
             foreach (Component component in components)
             {
@@ -29,7 +48,7 @@ namespace ConsoleGameEngine
             }
         }
 
-        public override void Update()
+        public void Update()
         {
             foreach (Component component in components)
             {
@@ -37,7 +56,7 @@ namespace ConsoleGameEngine
             }
         }
 
-        public override void Finish()
+        public void Finish()
         {
             foreach (Component component in components)
             {

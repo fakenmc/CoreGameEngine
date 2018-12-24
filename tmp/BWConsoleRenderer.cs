@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ConsoleGameEngine
+namespace CoreGameEngine
 {
     public class BWConsoleRenderer<T>
     {

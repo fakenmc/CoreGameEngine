@@ -8,54 +8,53 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 
-namespace ConsoleGameEngine
+namespace CoreGameEngine
 {
-    public class KeyboardInputHandler : IDisposable, IObservable<ConsoleKey>
+    public class InputHandler : IObservable<ConsoleKey>
     {
-        private Thread reader;
-        private ICollection<ConsoleKey> stopKeys;
         private Dictionary<ConsoleKey, ICollection<IObserver<ConsoleKey>>> observers;
+        private int maxKeysPerFrame;
 
-        public void StartReadingKeys(IEnumerable<ConsoleKey> stopKeys)
+        public InputHandler(int maxKeysPerFrame)
         {
-            this.stopKeys = new HashSet<ConsoleKey>(stopKeys);
-            reader = new Thread(ReadKeys);
-            reader.Start();
+            this.maxKeysPerFrame = maxKeysPerFrame;
+            observers = new Dictionary<ConsoleKey, ICollection<IObserver<ConsoleKey>>>();
         }
-
-        public void Dispose()
-        {
-            reader.Join();
-        }
-
-        private void ReadKeys()
+        public void HandleInput()
         {
             ConsoleKeyInfo keyInfo;
-
-            do
+            int keysRead = 0;
+            while (Console.KeyAvailable && keysRead < maxKeysPerFrame)
             {
                 keyInfo = Console.ReadKey(true);
+                Console.WriteLine($"Read {keyInfo.Key.ToString()}");
                 if (observers.ContainsKey(keyInfo.Key))
                 {
                     foreach (IObserver<ConsoleKey> observer
                         in observers[keyInfo.Key])
                     {
+                        Console.WriteLine("Notify observer " + observer.GetType().Name + " of key " + keyInfo.Key.ToString());
                         observer.Notify(keyInfo.Key);
                     }
 
                 }
-            } while (!stopKeys.Contains(keyInfo.Key));
+                keysRead++;
+            }
 
         }
 
-        public void AddObserver(
-            ConsoleKey whatToObserve, IObserver<ConsoleKey> observer)
+        public void RegisterObserver(
+            IEnumerable<ConsoleKey> whatToObserve, IObserver<ConsoleKey> observer)
         {
-            if (!observers.ContainsKey(whatToObserve))
+            foreach (ConsoleKey key in whatToObserve)
             {
-                observers[whatToObserve] = new List<IObserver<ConsoleKey>>();
+                if (!observers.ContainsKey(key))
+                {
+                    observers[key] = new List<IObserver<ConsoleKey>>();
+                }
+                Console.WriteLine($"Register observer {observer.GetType().Name} to key {key.ToString()}");
+                observers[key].Add(observer);
             }
-            observers[whatToObserve].Add(observer);
         }
         public void RemoveObserver(
             ConsoleKey whatToObserve, IObserver<ConsoleKey> observer)
@@ -74,7 +73,5 @@ namespace ConsoleGameEngine
                 theseObservers.Remove(observer);
             }
         }
-
-
     }
 }

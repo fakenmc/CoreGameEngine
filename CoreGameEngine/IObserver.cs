@@ -4,13 +4,11 @@
  *
  * Author: Nuno Fachada
  * */
-namespace ConsoleGameEngine
+namespace CoreGameEngine
 {
-    // Interface which represents generic 2D worlds
-    public interface IBuffer2D<T>
+    public interface IObserver<T>
     {
-        int XDim { get; }
-        int YDim { get; }
-        T this[int x, int y] { get; }
+        void Notify(T notification);
+
     }
 }

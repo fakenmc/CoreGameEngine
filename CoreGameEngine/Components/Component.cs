@@ -4,15 +4,12 @@
  *
  * Author: Nuno Fachada
  * */
-namespace ConsoleGameEngine
+namespace CoreGameEngine.Components
 {
-    public abstract class Component
+    public abstract class Component : BaseGameObject
     {
+        public GameObject ParentGameObject { get; internal set; }
+        public Scene ParentScene => ParentGameObject.ParentScene;
 
-        public virtual void Start() {}
-
-        public virtual void Update() {}
-
-        public virtual void Finish() {}
     }
 }

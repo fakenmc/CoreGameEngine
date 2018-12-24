@@ -8,12 +8,14 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 
-namespace ConsoleGameEngine
+namespace CoreGameEngine
 {
     public class Scene
     {
         public readonly int xdim;
         public readonly int ydim;
+
+        public readonly InputHandler inputHandler;
 
         private Dictionary<string, GameObject> gameObjects;
 
@@ -21,14 +23,15 @@ namespace ConsoleGameEngine
 
         private GameObject renderer = null;
 
-        public readonly DoubleBuffer2D<char> frameBuffer;
+        //public readonly DoubleBuffer2D<char> frameBuffer;
 
-        public Scene(int xdim, int ydim)
+        public Scene(int xdim, int ydim, InputHandler inputHandler) //, Renderer renderer
         {
             this.xdim = xdim;
             this.ydim = ydim;
             terminate = false;
-            frameBuffer = new DoubleBuffer2D<char>(xdim, ydim);
+            this.inputHandler = inputHandler;
+            //frameBuffer = new DoubleBuffer2D<char>(xdim, ydim);
             gameObjects = new Dictionary<string, GameObject>();
         }
 
@@ -39,6 +42,7 @@ namespace ConsoleGameEngine
 
         public void AddGameObject(string name, GameObject gameObject)
         {
+            gameObject.ParentScene = this;
             gameObjects.Add(name, gameObject);
         }
 
@@ -65,6 +69,9 @@ namespace ConsoleGameEngine
                 // Get real time in ticks (10000 ticks = 1 milisecond)
                 long start = DateTime.Now.Ticks;
 
+                // Process input
+                inputHandler.HandleInput();
+
                 // Update game objects
                 foreach (GameObject gameObject in gameObjects.Values)
                 {
@@ -72,9 +79,9 @@ namespace ConsoleGameEngine
                 }
 
                 // Swap framebuffer
-                frameBuffer.Swap();
+                //frameBuffer.Swap();
                 renderer?.Update();
-                frameBuffer.Clear(' ');
+                //frameBuffer.Clear(' ');
 
                 // Wait until next frame
                 Thread.Sleep((int)
