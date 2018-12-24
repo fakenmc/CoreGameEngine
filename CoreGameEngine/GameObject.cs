@@ -7,12 +7,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CoreGameEngine.Components;
+using System;
 
 namespace CoreGameEngine
 {
     public class GameObject : IGameObject, IEnumerable<Component>
     {
+
+        private static readonly Type[] oneOfAKind = new Type[]
+        {
+            typeof(Position),
+            typeof(KeyObserver)
+        };
 
         public Scene ParentScene { get; internal set; }
 
@@ -23,14 +29,34 @@ namespace CoreGameEngine
             components = new List<Component>();
         }
 
-        public void AddComponent(Component component) {
+        public void AddComponent(Component component)
+        {
+
+            // Check for one of a kind components
+            foreach (Type componentType in oneOfAKind)
+            {
+                if (componentType.IsInstanceOfType(component)
+                    && GetComponent(componentType) != null)
+                {
+                    throw new InvalidOperationException(
+                        $"Game objects can only have one {componentType.Name} "
+                        + "component");
+                }
+            }
+
             component.ParentGameObject = this;
             components.Add(component);
         }
 
         public T GetComponent<T>() where T : Component
         {
-            return components.First(component => component is T) as T;
+            return components.FirstOrDefault(component => component is T) as T;
+        }
+
+        public Component GetComponent(Type type)
+        {
+            return components.FirstOrDefault(
+                component => type.IsInstanceOfType(component));
         }
 
         public IEnumerable<T> GetComponents<T>() where T : Component

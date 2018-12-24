@@ -4,12 +4,17 @@
  *
  * Author: Nuno Fachada
  * */
-namespace CoreGameEngine.Components
+namespace CoreGameEngine
 {
-    public abstract class Component : BaseGameObject
+    public struct Vector2
     {
-        public GameObject ParentGameObject { get; internal set; }
-        public Scene ParentScene => ParentGameObject.ParentScene;
+        public float X { get; }
+        public float Y { get; }
 
+        public Vector2(float x, float y)
+        {
+            X = x;
+            Y = y;
+        }
     }
 }

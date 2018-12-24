@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CoreGameEngine.Components
+namespace CoreGameEngine
 {
     public class KeyObserver : Component, IObserver<ConsoleKey>
     {
@@ -42,7 +42,5 @@ namespace CoreGameEngine.Components
             return currentKeys;
 
         }
-
-
     }
 }
