@@ -64,13 +64,12 @@ namespace CoreGameEngine
             }
             renderer?.Start();
 
+            inputHandler.StartReadingInput();
+
             while (!terminate)
             {
                 // Get real time in ticks (10000 ticks = 1 milisecond)
                 long start = DateTime.Now.Ticks;
-
-                // Process input
-                inputHandler.HandleInput();
 
                 // Update game objects
                 foreach (GameObject gameObject in gameObjects.Values)
@@ -89,6 +88,8 @@ namespace CoreGameEngine
                     - DateTime.Now.Ticks / 10000));
 
             }
+
+            inputHandler.StopReadingInput();
 
             foreach (GameObject gameObject in gameObjects.Values)
             {

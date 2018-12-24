@@ -4,16 +4,18 @@ using System.Collections.Generic;
 
 namespace CoreGameEngine.Components
 {
-    public class KeyObserver : Component, IObserver<ConsoleKey>, IEnumerable<ConsoleKey>
+    public class KeyObserver : Component, IObserver<ConsoleKey>
     {
 
         private IEnumerable<ConsoleKey> keysToObserve;
         private Queue<ConsoleKey> observedKeys;
+        private object queueLock;
 
         public KeyObserver(IEnumerable<ConsoleKey> keysToObserve)
         {
             this.keysToObserve = keysToObserve;
             observedKeys = new Queue<ConsoleKey>();
+            queueLock = new object();
         }
 
         public override void Start()
@@ -23,20 +25,24 @@ namespace CoreGameEngine.Components
 
         public void Notify(ConsoleKey notification)
         {
-            observedKeys.Enqueue(notification);
+            lock (queueLock)
+            {
+                observedKeys.Enqueue(notification);
+            }
         }
 
-        // Go through all components in this game object
-        public IEnumerator<ConsoleKey> GetEnumerator()
+        public IEnumerable<ConsoleKey> GetCurrentKeys()
         {
-            return observedKeys.GetEnumerator();
+            IEnumerable<ConsoleKey> currentKeys;
+            lock (queueLock)
+            {
+                currentKeys = observedKeys.ToArray();
+                observedKeys.Clear();
+            }
+            return currentKeys;
+
         }
 
-        // Required for IEnumerable<T> implementation
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
 
     }
 }

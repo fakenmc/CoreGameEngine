@@ -5,6 +5,7 @@
  * Author: Nuno Fachada
  * */
 using System;
+using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
 
@@ -15,32 +16,44 @@ namespace CoreGameEngine
         private Dictionary<ConsoleKey, ICollection<IObserver<ConsoleKey>>> observers;
         private int maxKeysPerFrame;
 
-        public InputHandler(int maxKeysPerFrame)
+        private Thread inputThread;
+
+        private IEnumerable<ConsoleKey> quitKeys;
+
+        public InputHandler(int maxKeysPerFrame, IEnumerable<ConsoleKey> quitKeys)
         {
+            this.quitKeys = quitKeys;
             this.maxKeysPerFrame = maxKeysPerFrame;
             observers = new Dictionary<ConsoleKey, ICollection<IObserver<ConsoleKey>>>();
+            inputThread = new Thread(ReadInput);
         }
-        public void HandleInput()
+
+        private void ReadInput()
         {
-            ConsoleKeyInfo keyInfo;
-            int keysRead = 0;
-            while (Console.KeyAvailable && keysRead < maxKeysPerFrame)
+            ConsoleKey key;
+
+            do
             {
-                keyInfo = Console.ReadKey(true);
-                Console.WriteLine($"Read {keyInfo.Key.ToString()}");
-                if (observers.ContainsKey(keyInfo.Key))
+                key = Console.ReadKey(true).Key;
+                if (observers.ContainsKey(key))
                 {
-                    foreach (IObserver<ConsoleKey> observer
-                        in observers[keyInfo.Key])
+                    foreach (IObserver<ConsoleKey> observer in observers[key])
                     {
-                        Console.WriteLine("Notify observer " + observer.GetType().Name + " of key " + keyInfo.Key.ToString());
-                        observer.Notify(keyInfo.Key);
+                        observer.Notify(key);
                     }
-
                 }
-                keysRead++;
-            }
+            } while (!quitKeys.Contains(key));
+        }
 
+        public void StartReadingInput()
+        {
+            inputThread.Start();
+        }
+
+
+        public void StopReadingInput()
+        {
+            inputThread.Join();
         }
 
         public void RegisterObserver(
@@ -52,7 +65,6 @@ namespace CoreGameEngine
                 {
                     observers[key] = new List<IObserver<ConsoleKey>>();
                 }
-                Console.WriteLine($"Register observer {observer.GetType().Name} to key {key.ToString()}");
                 observers[key].Add(observer);
             }
         }
