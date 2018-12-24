@@ -23,12 +23,19 @@ namespace Basic
             scene.AddGameObject("quitter", quitter);
 
             // Create player object
+            char[,] playerSprite =
+            {
+                { '-', '|', '-'},
+                { '-', '0', '-'},
+                { '-', '|', '-'}
+            };
             GameObject player = new GameObject();
             KeyObserver playerKeyListener = new KeyObserver(new ConsoleKey[]
                 { ConsoleKey.DownArrow, ConsoleKey.UpArrow, ConsoleKey.RightArrow, ConsoleKey.LeftArrow });
             player.AddComponent(playerKeyListener);
             player.AddComponent(new Position(10f, 10f));
             player.AddComponent(new Player());
+            player.AddComponent(new ConsoleSprite(playerSprite));
             scene.AddGameObject("player", player);
 
             scene.GameLoop(100);
