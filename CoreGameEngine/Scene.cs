@@ -21,23 +21,17 @@ namespace CoreGameEngine
 
         private bool terminate = false;
 
-        private GameObject renderer = null;
+        private ConsoleRenderer renderer = null;
 
-        //public readonly DoubleBuffer2D<char> frameBuffer;
-
-        public Scene(int xdim, int ydim, InputHandler inputHandler) //, Renderer renderer
+        public Scene(int xdim, int ydim,
+            InputHandler inputHandler, ConsoleRenderer renderer)
         {
             this.xdim = xdim;
             this.ydim = ydim;
-            terminate = false;
             this.inputHandler = inputHandler;
-            //frameBuffer = new DoubleBuffer2D<char>(xdim, ydim);
-            gameObjects = new Dictionary<string, GameObject>();
-        }
-
-        public void SetRenderer(GameObject renderer)
-        {
             this.renderer = renderer;
+            terminate = false;
+            gameObjects = new Dictionary<string, GameObject>();
         }
 
         public void AddGameObject(string name, GameObject gameObject)
@@ -62,7 +56,7 @@ namespace CoreGameEngine
             {
                 gameObject.Start();
             }
-            renderer?.Start();
+            //renderer?.Start();
 
             inputHandler.StartReadingInput();
 
@@ -79,7 +73,7 @@ namespace CoreGameEngine
 
                 // Swap framebuffer
                 //frameBuffer.Swap();
-                renderer?.Update();
+                renderer?.Render(gameObjects.Values);
                 //frameBuffer.Clear(' ');
 
                 // Wait until next frame
@@ -95,7 +89,7 @@ namespace CoreGameEngine
             {
                 gameObject.Finish();
             }
-            renderer?.Finish();
+            //renderer?.Finish();
         }
 
     }

@@ -5,12 +5,14 @@
  * Author: Nuno Fachada
  * */
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace CoreGameEngine
 {
-    public class ConsoleRenderer<T>
+    public class ConsoleRenderer
     {
+
         private struct Renderable
         {
             public Vector3 Pos { get; }
@@ -26,45 +28,64 @@ namespace CoreGameEngine
         private int xdim;
         private int ydim;
 
-        private char[,] frame;
-
         public ConsoleRenderer(int xdim, int ydim)
         {
             this.xdim = xdim;
             this.ydim = ydim;
-            frame = new char[xdim, ydim];
         }
 
         public void Render(IEnumerable<GameObject> gameObjects)
         {
-            List<Renderable> stuffToRender = new List<Renderable>();
+            // Background and foreground colors of each pixel
+            ConsoleColor fgColor, bgColor;
 
-            // Filter game objects with sprite and position
-            // Turn sprite and position into renderable, add to list
+            // The new frame to render
+            ConsolePixel[,] frame = new ConsolePixel[xdim, ydim];
 
-            // Clear frame
-            for (int x = 0; x < xdim; x++)
+            // Filter game objects with sprite and position, get renderable
+            // information and order ascending by Z
+            IEnumerable<Renderable> stuffToRender = gameObjects
+                .Where(gObj => gObj.IsRenderable)
+                .Select(gObj => new Renderable(
+                    gObj.GetComponent<Position>().Pos,
+                    gObj.GetComponent<ConsoleSprite>()))
+                .OrderBy(rend => rend.Pos.Z);
+
+            // Render from lower layers to upper layers
+            foreach (Renderable rend in stuffToRender)
             {
-                for (int y = 0; y < ydim; y++)
+                // Cycle through all pixels in sprite
+                foreach (KeyValuePair<Vector2, ConsolePixel> pixel
+                    in rend.Sprite.Pixels)
                 {
-                    frame[x, y] = ' ';
+                    // Get absolute position of current pixel
+                    Vector2 absPos = new Vector2(
+                        rend.Pos.X + pixel.Key.X,
+                        rend.Pos.Y + pixel.Key.Y
+                    );
+
+                    // Put pixel in frame
+                    frame[(int)absPos.X, (int)absPos.Y] = pixel.Value;
                 }
             }
 
-            // Sort by z
-            stuffToRender.Sort(
-                (Renderable tr1, Renderable tr2) =>
-                    (int)(tr1.Pos.Z - tr2.Pos.Z));
-
-            // Render from lower layers to upper layers
-            foreach (Renderable r in stuffToRender)
+            // Show frame in screen
+            Console.SetCursorPosition(0, 0);
+            fgColor = Console.ForegroundColor;
+            bgColor = Console.BackgroundColor;
+            for (int y = 0; y < ydim; y++)
             {
-
+                for (int x = 0; x < xdim; x++)
+                {
+                    ConsolePixel pix = frame[x, y];
+                    if (!pix.backgroundColor.Equals(bgColor))
+                        bgColor = pix.backgroundColor;
+                    if (!pix.foregroundColor.Equals(fgColor))
+                        fgColor = pix.foregroundColor;
+                    Console.Write(pix.shape);
+                }
+                Console.WriteLine();
             }
-
-            // Clear buffer
-            stuffToRender.Clear();
         }
-
     }
 }

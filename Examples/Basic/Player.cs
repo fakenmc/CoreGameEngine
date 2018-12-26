@@ -31,7 +31,7 @@ namespace Basic
                         position.Pos = new Vector3(position.Pos.X - 1, position.Pos.Y, position.Pos.Z);
                         break;
                 }
-                Console.WriteLine($"Player position is ({position.Pos.X:f2}, {position.Pos.Y:f2})");
+                //Console.WriteLine($"Player position is ({position.Pos.X:f2}, {position.Pos.Y:f2})");
             }
         }
 

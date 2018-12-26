@@ -23,6 +23,22 @@ namespace CoreGameEngine
 
         public Scene ParentScene { get; internal set; }
 
+        public bool IsRenderable
+        {
+            get
+            {
+                bool containsSprite = false;
+                bool containsPosition = false;
+                foreach (Component comp in components)
+                {
+                    if (comp is ConsoleSprite) containsSprite = true;
+                    if (comp is Position) containsPosition = true;
+                    if (containsSprite && containsPosition) return true;
+                }
+                return false;
+            }
+        }
+
         private readonly ICollection<Component> components;
 
         public GameObject()
