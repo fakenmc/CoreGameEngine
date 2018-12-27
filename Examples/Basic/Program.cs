@@ -12,8 +12,8 @@ namespace Basic
 
             // Create scene
             ConsoleKey[] quitKeys = new ConsoleKey[] { ConsoleKey.Escape };
-            Scene scene = new Scene(40, 20,
-                new InputHandler(10, quitKeys), new ConsoleRenderer(40, 20));
+            Scene scene = new Scene(40, 20, new InputHandler(10, quitKeys),
+                new ConsoleRenderer(40, 20, new ConsolePixel(' ')));
 
             // Create quitter object
             GameObject quitter = new GameObject();

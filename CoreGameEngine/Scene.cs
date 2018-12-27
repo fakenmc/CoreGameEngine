@@ -56,7 +56,7 @@ namespace CoreGameEngine
             {
                 gameObject.Start();
             }
-            //renderer?.Start();
+            renderer?.Start();
 
             inputHandler.StartReadingInput();
 
@@ -71,10 +71,8 @@ namespace CoreGameEngine
                     gameObject.Update();
                 }
 
-                // Swap framebuffer
-                //frameBuffer.Swap();
+                // Render current frame
                 renderer?.Render(gameObjects.Values);
-                //frameBuffer.Clear(' ');
 
                 // Wait until next frame
                 Thread.Sleep((int)
@@ -89,7 +87,8 @@ namespace CoreGameEngine
             {
                 gameObject.Finish();
             }
-            //renderer?.Finish();
+
+            renderer?.Finish();
         }
 
     }

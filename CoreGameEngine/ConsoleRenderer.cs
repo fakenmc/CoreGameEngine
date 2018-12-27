@@ -7,11 +7,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace CoreGameEngine
 {
     public class ConsoleRenderer
     {
+        private bool cursorVisibleBefore = true;
 
         private struct Renderable
         {
@@ -27,11 +29,35 @@ namespace CoreGameEngine
 
         private int xdim;
         private int ydim;
+        private ConsolePixel bgPix;
 
-        public ConsoleRenderer(int xdim, int ydim)
+        public ConsoleRenderer(int xdim, int ydim, ConsolePixel bgPix)
         {
             this.xdim = xdim;
             this.ydim = ydim;
+            this.bgPix = bgPix;
+        }
+
+        public void Start()
+        {
+            // Clean console
+            Console.Clear();
+
+            // Hide cursor
+            Console.CursorVisible = false;
+
+            // Resize window if we're in Windows (not supported on Linux/Mac)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                cursorVisibleBefore = Console.CursorVisible;
+                Console.SetWindowSize(xdim, ydim + 1);
+            }
+
+        }
+
+        public void Finish()
+        {
+
         }
 
         public void Render(IEnumerable<GameObject> gameObjects)
@@ -77,13 +103,33 @@ namespace CoreGameEngine
             {
                 for (int x = 0; x < xdim; x++)
                 {
+                    // Get current pixel
                     ConsolePixel pix = frame[x, y];
+
+                    // If current pixel is not renderable, use background pixel
+                    if (!pix.IsRenderable)
+                    {
+                        pix = bgPix;
+                    }
+
+                    // Do we have to change the background and foreground
+                    // colors for this pixel?
                     if (!pix.backgroundColor.Equals(bgColor))
+                    {
                         bgColor = pix.backgroundColor;
+                        Console.BackgroundColor = bgColor;
+                    }
                     if (!pix.foregroundColor.Equals(fgColor))
+                    {
                         fgColor = pix.foregroundColor;
+                        Console.ForegroundColor = fgColor;
+                    }
+
+                    // Render pixel
                     Console.Write(pix.shape);
                 }
+
+                // New line
                 Console.WriteLine();
             }
         }

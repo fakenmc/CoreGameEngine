@@ -8,6 +8,16 @@ namespace CoreGameEngine
         public readonly ConsoleColor foregroundColor;
         public readonly ConsoleColor backgroundColor;
 
+        public bool IsRenderable
+        {
+            get
+            {
+                return !shape.Equals(default(char))
+                    && !foregroundColor.Equals(default(ConsoleColor))
+                    && !backgroundColor.Equals(default(ConsoleColor));
+            }
+        }
+
         public ConsolePixel(char shape,
             ConsoleColor foregroundColor, ConsoleColor backgroundColor)
         {
@@ -29,6 +39,7 @@ namespace CoreGameEngine
             foregroundColor = Console.ForegroundColor;
             backgroundColor = Console.BackgroundColor;
         }
+
     }
 
 }

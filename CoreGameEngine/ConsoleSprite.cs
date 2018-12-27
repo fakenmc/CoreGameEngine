@@ -20,7 +20,7 @@ namespace CoreGameEngine
                 for (int y = 0; y < pixels.GetLength(1); y++)
                 {
                     ConsolePixel cpixel = pixels[x, y];
-                    if (!cpixel.Equals(default(ConsolePixel)))
+                    if (cpixel.IsRenderable)
                     {
                         Pixels[new Vector2(x, y)] = cpixel;
                     }
