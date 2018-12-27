@@ -57,7 +57,7 @@ namespace CoreGameEngine
 
         public void Finish()
         {
-
+            Console.CursorVisible = cursorVisibleBefore;
         }
 
         public void Render(IEnumerable<GameObject> gameObjects)
