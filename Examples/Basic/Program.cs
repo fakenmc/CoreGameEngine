@@ -16,11 +16,15 @@ namespace Basic
     {
         static void Main(string[] args)
         {
+            // World dimensions
+            int xdim = 40;
+            int ydim = 20;
 
             // Create scene
             ConsoleKey[] quitKeys = new ConsoleKey[] { ConsoleKey.Escape };
-            Scene scene = new Scene(40, 20, new InputHandler(10, quitKeys),
-                new ConsoleRenderer(40, 20, new ConsolePixel(' ')));
+            Scene scene = new Scene(xdim, ydim,
+                new InputHandler(10, quitKeys),
+                new ConsoleRenderer(xdim, ydim, new ConsolePixel(' ')));
 
             // Create quitter object
             GameObject quitter = new GameObject();
@@ -45,6 +49,25 @@ namespace Basic
             player.AddComponent(new Player());
             player.AddComponent(new ConsoleSprite(playerSprite));
             scene.AddGameObject("player", player);
+
+            // Create walls
+            GameObject walls = new GameObject();
+            ConsolePixel wallPixel = new ConsolePixel(
+                '#', ConsoleColor.Blue, ConsoleColor.White);
+            Dictionary<Vector2, ConsolePixel> wallPixels =
+                new Dictionary<Vector2, ConsolePixel>();
+            for (int x = 0; x < xdim; x++)
+                wallPixels[new Vector2(x, 0)] = wallPixel;
+            for (int x = 0; x < xdim; x++)
+                wallPixels[new Vector2(x, ydim - 1)] = wallPixel;
+            for (int y = 0; y < ydim; y++)
+                wallPixels[new Vector2(0, y)] = wallPixel;
+            for (int y = 0; y < ydim; y++)
+                wallPixels[new Vector2(xdim - 1, y)] = wallPixel;
+            walls.AddComponent(new ConsoleSprite(wallPixels));
+            walls.AddComponent(new Position(0, 0, 1));
+            scene.AddGameObject("walls", walls);
+
 
             scene.GameLoop(100);
         }
