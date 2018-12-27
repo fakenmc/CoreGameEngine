@@ -27,12 +27,12 @@ namespace Basic
                 new ConsoleRenderer(xdim, ydim, new ConsolePixel(' ')));
 
             // Create quitter object
-            GameObject quitter = new GameObject();
+            GameObject quitter = new GameObject("Quitter");
             KeyObserver quitSceneKeyListener = new KeyObserver(new ConsoleKey[]
                 { ConsoleKey.Escape });
             quitter.AddComponent(quitSceneKeyListener);
             quitter.AddComponent(new Quitter());
-            scene.AddGameObject("quitter", quitter);
+            scene.AddGameObject(quitter);
 
             // Create player object
             char[,] playerSprite =
@@ -41,17 +41,17 @@ namespace Basic
                 { '-', '0', '-'},
                 { '-', '|', '-'}
             };
-            GameObject player = new GameObject();
+            GameObject player = new GameObject("Player");
             KeyObserver playerKeyListener = new KeyObserver(new ConsoleKey[]
                 { ConsoleKey.DownArrow, ConsoleKey.UpArrow, ConsoleKey.RightArrow, ConsoleKey.LeftArrow });
             player.AddComponent(playerKeyListener);
             player.AddComponent(new Position(10f, 10f, 0f));
             player.AddComponent(new Player());
             player.AddComponent(new ConsoleSprite(playerSprite));
-            scene.AddGameObject("player", player);
+            scene.AddGameObject(player);
 
             // Create walls
-            GameObject walls = new GameObject();
+            GameObject walls = new GameObject("Walls");
             ConsolePixel wallPixel = new ConsolePixel(
                 '#', ConsoleColor.Blue, ConsoleColor.White);
             Dictionary<Vector2, ConsolePixel> wallPixels =
@@ -66,8 +66,7 @@ namespace Basic
                 wallPixels[new Vector2(xdim - 1, y)] = wallPixel;
             walls.AddComponent(new ConsoleSprite(wallPixels));
             walls.AddComponent(new Position(0, 0, 1));
-            scene.AddGameObject("walls", walls);
-
+            scene.AddGameObject(walls);
 
             scene.GameLoop(100);
         }

@@ -23,6 +23,8 @@ namespace CoreGameEngine
 
         public Scene ParentScene { get; internal set; }
 
+        public string Name { get; }
+
         public bool IsRenderable
         {
             get
@@ -41,8 +43,9 @@ namespace CoreGameEngine
 
         private readonly ICollection<Component> components;
 
-        public GameObject()
+        public GameObject(string name)
         {
+            Name = name;
             components = new List<Component>();
         }
 
@@ -118,7 +121,5 @@ namespace CoreGameEngine
         {
             return GetEnumerator();
         }
-
-
     }
 }

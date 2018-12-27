@@ -34,10 +34,10 @@ namespace CoreGameEngine
             gameObjects = new Dictionary<string, GameObject>();
         }
 
-        public void AddGameObject(string name, GameObject gameObject)
+        public void AddGameObject(GameObject gameObject)
         {
             gameObject.ParentScene = this;
-            gameObjects.Add(name, gameObject);
+            gameObjects.Add(gameObject.Name, gameObject);
         }
 
         public GameObject FindGameObjectByName(string name)
