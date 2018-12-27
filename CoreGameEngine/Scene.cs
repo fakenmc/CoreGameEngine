@@ -17,19 +17,22 @@ namespace CoreGameEngine
 
         public readonly InputHandler inputHandler;
 
+        public readonly CollisionHandler collisionHandler;
+
         private Dictionary<string, GameObject> gameObjects;
 
         private bool terminate = false;
 
         private ConsoleRenderer renderer = null;
 
-        public Scene(int xdim, int ydim,
-            InputHandler inputHandler, ConsoleRenderer renderer)
+        public Scene(int xdim, int ydim, InputHandler inputHandler,
+            ConsoleRenderer renderer, CollisionHandler collisionHandler)
         {
             this.xdim = xdim;
             this.ydim = ydim;
             this.inputHandler = inputHandler;
             this.renderer = renderer;
+            this.collisionHandler = collisionHandler;
             terminate = false;
             gameObjects = new Dictionary<string, GameObject>();
         }
@@ -58,6 +61,7 @@ namespace CoreGameEngine
             }
             renderer?.Start();
 
+
             inputHandler.StartReadingInput();
 
             while (!terminate)
@@ -70,6 +74,9 @@ namespace CoreGameEngine
                 {
                     gameObject.Update();
                 }
+
+                // Update collision information
+                collisionHandler.Update(gameObjects.Values);
 
                 // Render current frame
                 renderer?.Render(gameObjects.Values);

@@ -22,28 +22,30 @@ namespace Basic
 
         public override void Update()
         {
+            float x = position.Pos.X;
+            float y = position.Pos.Y;
+
             foreach (ConsoleKey key in keyObserver.GetCurrentKeys())
             {
                 switch (key) {
                     case ConsoleKey.UpArrow:
-                        position.Pos = new Vector3(
-                            position.Pos.X, position.Pos.Y - 1, position.Pos.Z);
+                        y -= 1;
                         break;
                     case ConsoleKey.DownArrow:
-                        position.Pos = new Vector3(
-                            position.Pos.X, position.Pos.Y + 1, position.Pos.Z);
+                        y += 1;
                         break;
                     case ConsoleKey.RightArrow:
-                        position.Pos = new Vector3(
-                            position.Pos.X + 1, position.Pos.Y, position.Pos.Z);
+                        x += 1;
                         break;
                     case ConsoleKey.LeftArrow:
-                        position.Pos = new Vector3(
-                            position.Pos.X - 1, position.Pos.Y, position.Pos.Z);
+                        x -= 1;
                         break;
                 }
-                //Console.WriteLine($"Player position is ({position.Pos.X:f2}, {position.Pos.Y:f2})");
             }
+
+            position.Pos = new Vector3(
+                position.Pos.X - 1, position.Pos.Y, position.Pos.Z);
+
         }
 
     }

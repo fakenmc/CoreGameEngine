@@ -14,32 +14,23 @@ namespace CoreGameEngine
     public class GameObject : IGameObject, IEnumerable<Component>
     {
 
-        private static readonly Type[] oneOfAKind = new Type[]
-        {
-            typeof(Position),
-            typeof(KeyObserver),
-            typeof(ConsoleSprite)
-        };
-
         public Scene ParentScene { get; internal set; }
 
         public string Name { get; }
 
-        public bool IsRenderable
+        public bool IsRenderable => containsSprite && containsPosition;
+
+        public bool IsCollidable => containsPosition && containsCollider;
+
+        private static readonly Type[] oneOfAKind = new Type[]
         {
-            get
-            {
-                bool containsSprite = false;
-                bool containsPosition = false;
-                foreach (Component comp in components)
-                {
-                    if (comp is ConsoleSprite) containsSprite = true;
-                    if (comp is Position) containsPosition = true;
-                    if (containsSprite && containsPosition) return true;
-                }
-                return false;
-            }
-        }
+            typeof(Position),
+            typeof(KeyObserver),
+            typeof(ConsoleSprite),
+            typeof(AbstractCollider)
+        };
+
+        private bool containsSprite, containsPosition, containsCollider;
 
         private readonly ICollection<Component> components;
 
@@ -64,23 +55,36 @@ namespace CoreGameEngine
                 }
             }
 
+            if (component is AbstractCollider) containsCollider = true;
+            else if (component is Position) containsPosition = true;
+            else if (component is ConsoleSprite) containsSprite = true;
+
             component.ParentGameObject = this;
             components.Add(component);
         }
 
         public T GetComponent<T>() where T : Component
         {
+            // TODO: Use dictionary for one of a kind game objects
+            // to speed up this search
+
             return components.FirstOrDefault(component => component is T) as T;
         }
 
         public Component GetComponent(Type type)
         {
+            // TODO: Use dictionary for one of a kind game objects
+            // to speed up this search
+
             return components.FirstOrDefault(
                 component => type.IsInstanceOfType(component));
         }
 
         public IEnumerable<T> GetComponents<T>() where T : Component
         {
+            // TODO: Use dictionary for one of a kind game objects
+            // to speed up this search
+
             return components
                 .Where(component => component is T)
                 .Select((component => component as T));
