@@ -17,11 +17,13 @@ namespace CoreGameEngine
 
         private struct Renderable
         {
+            public string Name { get; }
             public Vector3 Pos { get; }
             public ConsoleSprite Sprite { get; }
 
-            public Renderable(Vector3 pos, ConsoleSprite sprite)
+            public Renderable(string name, Vector3 pos, ConsoleSprite sprite)
             {
+                Name = name;
                 Pos = pos;
                 Sprite = sprite;
             }
@@ -73,6 +75,7 @@ namespace CoreGameEngine
             IEnumerable<Renderable> stuffToRender = gameObjects
                 .Where(gObj => gObj.IsRenderable)
                 .Select(gObj => new Renderable(
+                    gObj.Name,
                     gObj.GetComponent<Position>().Pos,
                     gObj.GetComponent<ConsoleSprite>()))
                 .OrderBy(rend => rend.Pos.Z);
@@ -85,13 +88,17 @@ namespace CoreGameEngine
                     in rend.Sprite.Pixels)
                 {
                     // Get absolute position of current pixel
-                    Vector2 absPos = new Vector2(
-                        rend.Pos.X + pixel.Key.X,
-                        rend.Pos.Y + pixel.Key.Y
-                    );
+                    int x = (int)(rend.Pos.X + pixel.Key.X);
+                    int y = (int)(rend.Pos.Y + pixel.Key.Y);
+
+                    // Throw exception if any of these is out of bounds
+                    if (x < 0 || x >= xdim || y < 0 || y >= ydim)
+                        throw new IndexOutOfRangeException(
+                            $"Out of bounds pixel at ({x},{y}) in game object"
+                            + $" '{rend.Name}'");
 
                     // Put pixel in frame
-                    frame[(int)absPos.X, (int)absPos.Y] = pixel.Value;
+                    frame[x, y] = pixel.Value;
                 }
             }
 
