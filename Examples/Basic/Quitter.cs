@@ -10,6 +10,8 @@ using CoreGameEngine;
 
 namespace Basic
 {
+    // Simple component which listens for the escape key and terminates the
+    // parent scene
     public class Quitter : Component
     {
         private KeyObserver keyObserver;

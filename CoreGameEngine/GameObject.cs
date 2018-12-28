@@ -11,35 +11,51 @@ using System;
 
 namespace CoreGameEngine
 {
+    // Class for all game objects
     public class GameObject : IGameObject, IEnumerable<Component>
     {
 
+        // Scence where this game object is
         public Scene ParentScene { get; internal set; }
 
+        // The name of this game object
         public string Name { get; }
 
-        public bool IsRenderable => containsSprite && containsPosition;
+        // Is this game object renderable?
+        public bool IsRenderable =>
+            containsRenderableComponent && containsPosition;
 
+        // Is the game object collidable?
         public bool IsCollidable => containsPosition && containsCollider;
 
+
+        // Components which a game object can only have one of
         private static readonly Type[] oneOfAKind = new Type[]
         {
             typeof(Position),
             typeof(KeyObserver),
-            typeof(ConsoleSprite),
+            typeof(RenderableComponent),
             typeof(AbstractCollider)
         };
 
-        private bool containsSprite, containsPosition, containsCollider;
+        // Helper variables for the IsRenderable property
+        private bool
+            containsRenderableComponent, containsPosition, containsCollider;
 
+        // The components in this game object
         private readonly ICollection<Component> components;
 
+        // Create a new game object
         public GameObject(string name)
         {
             Name = name;
             components = new List<Component>();
+            containsRenderableComponent = false;
+            containsPosition = false;
+            containsCollider = false;
         }
 
+        // Add a component to this game object
         public void AddComponent(Component component)
         {
 
@@ -55,14 +71,23 @@ namespace CoreGameEngine
                 }
             }
 
-            if (component is AbstractCollider) containsCollider = true;
-            else if (component is Position) containsPosition = true;
-            else if (component is ConsoleSprite) containsSprite = true;
+            // Is this component a position component or a renderable component?
+            if (component is Position)
+                containsPosition = true;
+            else if (component is RenderableComponent)
+                containsRenderableComponent = true;
+            else if (component is AbstractCollider)
+                containsCollider = true;
 
+            // Specify reference to this game object in the component
             component.ParentGameObject = this;
+
+            // Add component to this game object
             components.Add(component);
         }
 
+        // The following methods provide several ways of getting components
+        // from this game object
         public T GetComponent<T>() where T : Component
         {
             // TODO: Use dictionary for one of a kind game objects
@@ -90,6 +115,7 @@ namespace CoreGameEngine
                 .Select((component => component as T));
         }
 
+        // Initialize all components in this game object
         public void Start()
         {
             foreach (Component component in components)
@@ -98,6 +124,7 @@ namespace CoreGameEngine
             }
         }
 
+        // Update all components in this game object
         public void Update()
         {
             foreach (Component component in components)
@@ -106,6 +133,7 @@ namespace CoreGameEngine
             }
         }
 
+        // Tear down all components in this game object
         public void Finish()
         {
             foreach (Component component in components)
@@ -113,6 +141,9 @@ namespace CoreGameEngine
                 component.Finish();
             }
         }
+
+        // The methods below are required for implementing the IEnumerable<T>
+        // interface
 
         // Go through all components in this game object
         public IEnumerator<Component> GetEnumerator()

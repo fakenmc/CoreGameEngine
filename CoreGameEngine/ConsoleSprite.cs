@@ -5,23 +5,34 @@
  * Author: Nuno Fachada
  * */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace CoreGameEngine
 {
-    public class ConsoleSprite : Component
+    // Represents a console sprite
+    public class ConsoleSprite : RenderableComponent
     {
-        public IDictionary<Vector2, ConsolePixel> Pixels { get; }
+        // Since a console sprite is a renderable component, it must implement
+        // this property, which returns an ienumerable of position-pixel pairs
+        // to render
+        public override
+        IEnumerable<KeyValuePair<Vector2, ConsolePixel>> Pixels => pixels;
+
+        // The position-pixel pairs are actually kept here
+        private IDictionary<Vector2, ConsolePixel> pixels;
+
+        // Below there are several constructors for this class
 
         public ConsoleSprite(IDictionary<Vector2, ConsolePixel> pixels)
         {
-            Pixels = new Dictionary<Vector2, ConsolePixel>(pixels);
+            this.pixels = new Dictionary<Vector2, ConsolePixel>(pixels);
         }
 
         public ConsoleSprite(ConsolePixel[,] pixels)
         {
-            Pixels = new Dictionary<Vector2, ConsolePixel>();
+            this.pixels = new Dictionary<Vector2, ConsolePixel>();
             for (int x = 0; x < pixels.GetLength(0); x++)
             {
                 for (int y = 0; y < pixels.GetLength(1); y++)
@@ -29,7 +40,7 @@ namespace CoreGameEngine
                     ConsolePixel cpixel = pixels[x, y];
                     if (cpixel.IsRenderable)
                     {
-                        Pixels[new Vector2(x, y)] = cpixel;
+                        this.pixels[new Vector2(x, y)] = cpixel;
                     }
                 }
             }
@@ -37,7 +48,7 @@ namespace CoreGameEngine
 
         public ConsoleSprite(char[,] pixels)
         {
-            Pixels = new Dictionary<Vector2, ConsolePixel>();
+            this.pixels = new Dictionary<Vector2, ConsolePixel>();
             for (int x = 0; x < pixels.GetLength(0); x++)
             {
                 for (int y = 0; y < pixels.GetLength(1); y++)
@@ -45,11 +56,29 @@ namespace CoreGameEngine
                     char shape = pixels[x, y];
                     if (!shape.Equals(default(char)))
                     {
-                        Pixels[new Vector2(x, y)] = new ConsolePixel(shape);
+                        this.pixels[new Vector2(x, y)] =
+                            new ConsolePixel(shape);
                     }
                 }
             }
         }
 
+        public ConsoleSprite(
+            char[,] pixels, ConsoleColor fgColor, ConsoleColor bgColor)
+        {
+            this.pixels = new Dictionary<Vector2, ConsolePixel>();
+            for (int x = 0; x < pixels.GetLength(0); x++)
+            {
+                for (int y = 0; y < pixels.GetLength(1); y++)
+                {
+                    char shape = pixels[x, y];
+                    if (!shape.Equals(default(char)))
+                    {
+                        this.pixels[new Vector2(x, y)] =
+                            new ConsolePixel(shape, fgColor, bgColor);
+                    }
+                }
+            }
+        }
     }
 }

@@ -11,17 +11,22 @@ using System.Runtime.InteropServices;
 
 namespace CoreGameEngine
 {
+    // A renderer for the console
     public class ConsoleRenderer
     {
+        // Was the cursor visible before game rendering started?
+        // For now we assume it was
         private bool cursorVisibleBefore = true;
 
+        // This struct is used internally for managing renderable components
         private struct Renderable
         {
             public string Name { get; }
             public Vector3 Pos { get; }
-            public ConsoleSprite Sprite { get; }
+            public RenderableComponent Sprite { get; }
 
-            public Renderable(string name, Vector3 pos, ConsoleSprite sprite)
+            public Renderable(
+                string name, Vector3 pos, RenderableComponent sprite)
             {
                 Name = name;
                 Pos = pos;
@@ -29,10 +34,13 @@ namespace CoreGameEngine
             }
         }
 
-        private int xdim;
-        private int ydim;
+        // Scene dimensions
+        private int xdim, ydim;
+
+        // Default background pixel
         private ConsolePixel bgPix;
 
+        // Constructor
         public ConsoleRenderer(int xdim, int ydim, ConsolePixel bgPix)
         {
             this.xdim = xdim;
@@ -40,6 +48,7 @@ namespace CoreGameEngine
             this.bgPix = bgPix;
         }
 
+        // Pre-rendering setup
         public void Start()
         {
             // Clean console
@@ -57,11 +66,13 @@ namespace CoreGameEngine
 
         }
 
+        // Post-rendering teardown
         public void Finish()
         {
             Console.CursorVisible = cursorVisibleBefore;
         }
 
+        // Render a frame
         public void Render(IEnumerable<GameObject> gameObjects)
         {
             // Background and foreground colors of each pixel
@@ -77,7 +88,7 @@ namespace CoreGameEngine
                 .Select(gObj => new Renderable(
                     gObj.Name,
                     gObj.GetComponent<Position>().Pos,
-                    gObj.GetComponent<ConsoleSprite>()))
+                    gObj.GetComponent<RenderableComponent>()))
                 .OrderBy(rend => rend.Pos.Z);
 
             // Render from lower layers to upper layers

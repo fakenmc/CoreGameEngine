@@ -5,7 +5,7 @@ namespace CoreGameEngine
 {
     public class SpriteCollider : AbstractCollider
     {
-        public override IEnumerable<Vector2> Occupied => sprite.Pixels.Keys;
+        public override IEnumerable<Vector2> Occupied => null; // TODO
 
         private ConsoleSprite sprite;
 

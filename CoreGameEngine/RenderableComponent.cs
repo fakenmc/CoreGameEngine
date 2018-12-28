@@ -5,16 +5,14 @@
  * Author: Nuno Fachada
  * */
 
+using System.Collections.Generic;
+
 namespace CoreGameEngine
 {
-    // Interface all game objects must obey
-    public interface IGameObject
+    // Renderable components must extend this class
+    public abstract class RenderableComponent : Component
     {
-
-        void Start();
-
-        void Update();
-
-        void Finish();
+        public abstract
+        IEnumerable<KeyValuePair<Vector2, ConsolePixel>> Pixels { get; }
     }
 }

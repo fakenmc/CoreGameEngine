@@ -6,6 +6,7 @@
  * */
 namespace CoreGameEngine
 {
+    // Basic implementation of a 2D vector
     public struct Vector2
     {
         public float X { get; }

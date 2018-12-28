@@ -7,6 +7,7 @@
 
 namespace CoreGameEngine
 {
+    // This component defines the position of a game object
     public class Position : Component
     {
         public Vector3 Pos { get; set; }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 namespace CoreGameEngine
 {
+    // This component is an key observer
     public class KeyObserver : Component, IObserver<ConsoleKey>
     {
 
@@ -30,6 +31,8 @@ namespace CoreGameEngine
             ParentScene.inputHandler.RegisterObserver(keysToObserve, this);
         }
 
+        // This method will be called by the subject when an observed key is
+        // pressed
         public void Notify(ConsoleKey notification)
         {
             lock (queueLock)
@@ -38,6 +41,7 @@ namespace CoreGameEngine
             }
         }
 
+        // Return the currently observed keys
         public IEnumerable<ConsoleKey> GetCurrentKeys()
         {
             IEnumerable<ConsoleKey> currentKeys;
