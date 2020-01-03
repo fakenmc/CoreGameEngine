@@ -18,6 +18,8 @@ namespace CoreGameEngine
         // For now we assume it was
         private bool cursorVisibleBefore = true;
 
+        private ConsolePixel[,] framePrev, frameNext;
+
         // This struct is used internally for managing renderable components
         private struct Renderable
         {
@@ -46,6 +48,15 @@ namespace CoreGameEngine
             this.xdim = xdim;
             this.ydim = ydim;
             this.bgPix = bgPix;
+            framePrev = new ConsolePixel[xdim, ydim];
+            frameNext = new ConsolePixel[xdim, ydim];
+            for (int y = 0; y < ydim; y++)
+            {
+                for (int x = 0; x < xdim; x++)
+                {
+                    frameNext[x, y] = bgPix;
+                }
+            }
         }
 
         // Pre-rendering setup
@@ -64,6 +75,8 @@ namespace CoreGameEngine
                 Console.SetWindowSize(xdim, ydim + 1);
             }
 
+            // Render the first frame
+            RenderFrame();
         }
 
         // Post-rendering teardown
@@ -72,15 +85,73 @@ namespace CoreGameEngine
             Console.CursorVisible = cursorVisibleBefore;
         }
 
-        // Render a frame
-        public void Render(IEnumerable<GameObject> gameObjects)
+        // Renders the actual frame
+        private void RenderFrame()
         {
             // Background and foreground colors of each pixel
             ConsoleColor fgColor, bgColor;
 
-            // The new frame to render
-            ConsolePixel[,] frame = new ConsolePixel[xdim, ydim];
+            // Auxiliary frame variable for swapping buffers in the end
+            ConsolePixel[,] frameAux;
 
+            // Show frame in screen
+            Console.SetCursorPosition(0, 0);
+            fgColor = Console.ForegroundColor;
+            bgColor = Console.BackgroundColor;
+            for (int y = 0; y < ydim; y++)
+            {
+                for (int x = 0; x < xdim; x++)
+                {
+                    // Get current and previous pixels for this position
+                    ConsolePixel pix = frameNext[x, y];
+                    ConsolePixel prevPix = framePrev[x, y];
+
+                    // Clear pixel at previous frame
+                    framePrev[x, y] = bgPix;
+
+                    // If current pixel is not renderable, use background pixel
+                    if (!pix.IsRenderable)
+                    {
+                        pix = bgPix;
+                    }
+
+                    // If current pixel is the same as previous pixel, don't
+                    // draw it
+                    if (pix.Equals(prevPix)) continue;
+
+                    // Do we have to change the background and foreground
+                    // colors for this pixel?
+                    if (!pix.backgroundColor.Equals(bgColor))
+                    {
+                        bgColor = pix.backgroundColor;
+                        Console.BackgroundColor = bgColor;
+                    }
+                    if (!pix.foregroundColor.Equals(fgColor))
+                    {
+                        fgColor = pix.foregroundColor;
+                        Console.ForegroundColor = fgColor;
+                    }
+
+                    // Position cursor
+                    Console.SetCursorPosition(x, y);
+
+                    // Render pixel
+                    Console.Write(pix.shape);
+                }
+
+                // New line
+                Console.WriteLine();
+            }
+
+            // Swap frame buffers
+            frameAux = frameNext;
+            frameNext = framePrev;
+            framePrev = frameAux;
+        }
+
+        // Creates the next frame for rendering, and then renders it
+        public void Render(IEnumerable<GameObject> gameObjects)
+        {
             // Filter game objects with sprite and position, get renderable
             // information and order ascending by Z
             IEnumerable<Renderable> stuffToRender = gameObjects
@@ -109,47 +180,12 @@ namespace CoreGameEngine
                             + $" '{rend.Name}'");
 
                     // Put pixel in frame
-                    frame[x, y] = pixel.Value;
+                    frameNext[x, y] = pixel.Value;
                 }
             }
 
-            // Show frame in screen
-            Console.SetCursorPosition(0, 0);
-            fgColor = Console.ForegroundColor;
-            bgColor = Console.BackgroundColor;
-            for (int y = 0; y < ydim; y++)
-            {
-                for (int x = 0; x < xdim; x++)
-                {
-                    // Get current pixel
-                    ConsolePixel pix = frame[x, y];
-
-                    // If current pixel is not renderable, use background pixel
-                    if (!pix.IsRenderable)
-                    {
-                        pix = bgPix;
-                    }
-
-                    // Do we have to change the background and foreground
-                    // colors for this pixel?
-                    if (!pix.backgroundColor.Equals(bgColor))
-                    {
-                        bgColor = pix.backgroundColor;
-                        Console.BackgroundColor = bgColor;
-                    }
-                    if (!pix.foregroundColor.Equals(fgColor))
-                    {
-                        fgColor = pix.foregroundColor;
-                        Console.ForegroundColor = fgColor;
-                    }
-
-                    // Render pixel
-                    Console.Write(pix.shape);
-                }
-
-                // New line
-                Console.WriteLine();
-            }
+            // Render the frame
+            RenderFrame();
         }
     }
 }

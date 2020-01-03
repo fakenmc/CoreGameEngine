@@ -101,8 +101,9 @@ namespace CoreGameEngine
                 renderer?.Render(gameObjects.Values);
 
                 // Time to wait until next frame
-                timeToWait = (int)(start / 10000 + msFramesPerSecond
-                    - DateTime.Now.Ticks / 10000);
+                timeToWait = (int)(start / TimeSpan.TicksPerMillisecond
+                    + msFramesPerSecond
+                    - DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
 
                 // If this time is negative, we cheat by making it zero
                 // Note this should be handled with a more robust game loop
